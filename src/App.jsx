@@ -107,13 +107,14 @@ function LoginPanel() {
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
       if (error.code !== "auth/popup-closed-by-user") {
+        const errorCode = String(error.code || "").toLowerCase();
         setMessage(
-          error.code === "auth/unauthorized-domain"
+          errorCode.includes("unauthorized-domain")
             ? "Domínio não autorizado no Firebase."
-            : error.code === "auth/invalid-api-key" ||
-                error.code === "auth/api-key-not-valid"
-              ? "Chave do Firebase inválida. Confira a configuração em .env.local."
-              : error.code === "auth/operation-not-allowed"
+            : errorCode.includes("api-key-not-valid") ||
+                errorCode.includes("invalid-api-key")
+              ? "A chave de API do Firebase é inválida. Copie a chave do app Web em Configurações do projeto e atualize VITE_FIREBASE_API_KEY no .env.local."
+              : errorCode.includes("operation-not-allowed")
                 ? "Login com Google desativado no Firebase."
                 : `Não foi possível entrar com Google: ${error.message}`,
         );
